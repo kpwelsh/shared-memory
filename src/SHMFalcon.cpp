@@ -22,13 +22,16 @@ namespace SHMFalcon {
             //Put the polling here.
         }
 
+        void feedbackFalcon(array<double, 3> EEForces) {
+            // Give some force feedback.
+        }
+
         void listen(){
             mapped_region region(*SharedMemory, read_write);
             shared_data* sharedData = (shared_data*)region.get_address();
-            cout << sharedData->readData()[0] << endl;
-            sharedData->writeData({{1,1,1,1,1,1,1,1,1}});
             while(sharedData->keepGoing) {
                 pollFalcon();
+                feedbackFalcon(sharedData->readEEForces());
             }
             remove(SharedMemory->get_name());
         }

@@ -14,7 +14,7 @@ int main() {
     sleep(1);
     mapped_region region(*SHMFalcon::SharedMemory, read_write);
     SHMFalcon::shared_data* sharedData = (SHMFalcon::shared_data*)region.get_address();
-    cout << sharedData->readData()[0] << endl;
+    cout << sharedData->readPositions()[0] << endl;
     SHMFalcon::stopListener();
     return 0;
 }

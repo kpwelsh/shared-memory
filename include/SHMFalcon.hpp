@@ -17,7 +17,8 @@ namespace SHMFalcon {
     
     struct shared_data {
     private:
-        std::array<double, 9> SomeData;
+        std::array<double, 3> FalconPositions;
+        std::array<double, 3> EEForces;
         mutable boost::interprocess::interprocess_mutex mutex;
 
     public:
@@ -25,17 +26,26 @@ namespace SHMFalcon {
         shared_data() {
         }
 
-
-        std::array<double, 9> readData(){
+        std::array<double, 3> readPositions(){
             boost::interprocess::scoped_lock<boost::interprocess::interprocess_mutex> lock(mutex);
-            
-            return this->SomeData;
+            return this->FalconPositions;
         }
 
-        void writeData(std::array<double, 9> data){
+        void writePositions(std::array<double, 3> data){
             boost::interprocess::scoped_lock<boost::interprocess::interprocess_mutex> lock(mutex);
-            this->SomeData = data;
+            this->FalconPositions = data;
         }
+
+        std::array<double, 3> readEEForces(){
+            boost::interprocess::scoped_lock<boost::interprocess::interprocess_mutex> lock(mutex);
+            return this->EEForces;
+        }
+        
+        void writeEEForces(std::array<double, 3> data){
+            boost::interprocess::scoped_lock<boost::interprocess::interprocess_mutex> lock(mutex);
+            this->EEForces = data;
+        }
+
     };
 }
 
