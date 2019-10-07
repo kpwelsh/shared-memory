@@ -7,37 +7,12 @@
 #include <iostream>
 #include <sstream>
 #include <array>
+#include "SHMFalcon.hpp"
 
 using namespace std;
-
 using namespace boost::interprocess;
+
 namespace SHMFalcon {
-
-    shared_memory_object* SharedMemory;
-
-    struct shared_data {
-    private:
-        mutable interprocess_mutex mutex;
-        array<double, 9> SomeData;
-
-    public:
-        bool keepGoing = true;
-
-        array<double, 9> readData(){
-            this->mutex.lock();
-            // Pretty sure this copies the array, and not the address.
-            array<double, 9> r = this->SomeData;
-            this->mutex.unlock();
-            return r;
-        }
-
-        void writeData(array<double, 9> data){
-            this->mutex.lock();
-            this->SomeData = data;
-            this->mutex.unlock();
-        }
-    };
-
     namespace {
         bool init_falcon() {
             //Put that init code here.
@@ -50,11 +25,12 @@ namespace SHMFalcon {
         void listen(){
             mapped_region region(*SharedMemory, read_write);
             shared_data* sharedData = (shared_data*)region.get_address();
-
-            while(sharedData->keepGoing) {
-                pollFalcon();
-            }
-
+            cout << "Here" << endl;
+            cout << sharedData->readData()[0] << endl;
+            //while(sharedData->keepGoing) {
+            //    pollFalcon();
+            //}
+            sleep(2);
             remove(SharedMemory->get_name());
         }
     }
@@ -65,9 +41,10 @@ namespace SHMFalcon {
         mapped_region region(*SharedMemory, read_write);
         new (region.get_address()) shared_data;
 
+        //((shared_data*)region.get_address())->writeData({0,0,0,0,0,0,0,0,0});
+
         pid_t pid = fork();
         if (pid == 0) {
-            // We are the child process
             listen();
             exit(0);
         }

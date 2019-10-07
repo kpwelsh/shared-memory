@@ -1,5 +1,7 @@
 #include <boost/interprocess/shared_memory_object.hpp>
 #include <boost/interprocess/mapped_region.hpp>
+#include <boost/interprocess/offset_ptr.hpp>
+#include <boost/interprocess/sync/interprocess_mutex.hpp>
 #include <stdio.h>
 #include <iostream>
 #include "../include/SHMFalcon.hpp"
@@ -12,8 +14,7 @@ int main() {
     sleep(1);
     mapped_region region(*SHMFalcon::SharedMemory, read_only);
     SHMFalcon::shared_data* sharedData = (SHMFalcon::shared_data*)region.get_address();
-    array<double,9> data = sharedData->readData();
-    cout << "From parent: " << data[0] << endl;;
+    sharedData->mutex.try_lock();
     SHMFalcon::stopListener();
     return 0;
 }
