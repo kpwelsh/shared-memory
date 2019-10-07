@@ -17,30 +17,24 @@ namespace SHMFalcon {
     
     struct shared_data {
     private:
-        double SomeData[9];
+        std::array<double, 9> SomeData;
+        mutable boost::interprocess::interprocess_mutex mutex;
 
     public:
-        mutable boost::interprocess::interprocess_mutex mutex;
+        bool keepGoing = true;
         shared_data() {
         }
 
-        bool keepGoing = true;
 
-        double* readData(){
-            std::cout << "there" << std::endl;
+        std::array<double, 9> readData(){
             boost::interprocess::scoped_lock<boost::interprocess::interprocess_mutex> lock(mutex);
-            double* r = new double[9]{0,0,0,0,0,0,0,0,0};
-            for(int i = 0; i < 9; i++) {
-                r[i] = this->SomeData[i];
-            }
-            return r;
+            
+            return this->SomeData;
         }
 
-        void writeData(double* data){
+        void writeData(std::array<double, 9> data){
             boost::interprocess::scoped_lock<boost::interprocess::interprocess_mutex> lock(mutex);
-            for(int i = 0; i < 9; i++) {
-                this->SomeData[i] = data[i];
-            }
+            this->SomeData = data;
         }
     };
 }

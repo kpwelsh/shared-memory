@@ -12,9 +12,9 @@ int main() {
     int pid = SHMFalcon::startListener("Here is a key");
     cout << "Listening with PID " << pid << endl;
     sleep(1);
-    mapped_region region(*SHMFalcon::SharedMemory, read_only);
+    mapped_region region(*SHMFalcon::SharedMemory, read_write);
     SHMFalcon::shared_data* sharedData = (SHMFalcon::shared_data*)region.get_address();
-    sharedData->mutex.try_lock();
+    cout << sharedData->readData()[0] << endl;
     SHMFalcon::stopListener();
     return 0;
 }

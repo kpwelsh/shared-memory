@@ -25,12 +25,11 @@ namespace SHMFalcon {
         void listen(){
             mapped_region region(*SharedMemory, read_write);
             shared_data* sharedData = (shared_data*)region.get_address();
-            cout << "Here" << endl;
             cout << sharedData->readData()[0] << endl;
-            //while(sharedData->keepGoing) {
-            //    pollFalcon();
-            //}
-            sleep(2);
+            sharedData->writeData({{1,1,1,1,1,1,1,1,1}});
+            while(sharedData->keepGoing) {
+                pollFalcon();
+            }
             remove(SharedMemory->get_name());
         }
     }
@@ -40,8 +39,6 @@ namespace SHMFalcon {
         SharedMemory->truncate(sizeof(shared_data));
         mapped_region region(*SharedMemory, read_write);
         new (region.get_address()) shared_data;
-
-        //((shared_data*)region.get_address())->writeData({0,0,0,0,0,0,0,0,0});
 
         pid_t pid = fork();
         if (pid == 0) {
